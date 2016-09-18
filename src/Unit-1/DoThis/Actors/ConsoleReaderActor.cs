@@ -10,15 +10,21 @@ namespace WinTail.Actors
 		private static readonly string ExitCommand = "exit";
 
 		private IActorRef _consoleWriterActor;
+		private IActorRef _validationActor;
 
-		public ConsoleReaderActor(IActorRef consoleWriterActor)
+		public ConsoleReaderActor(IActorRef consoleWriterActor, IActorRef validationActor)
 		{
 			if (consoleWriterActor == null)
 			{
 				throw new ArgumentNullException(nameof(consoleWriterActor));
 			}
+			if (validationActor == null)
+			{
+				throw new ArgumentNullException(nameof(validationActor));
+			}
 
 			_consoleWriterActor = consoleWriterActor;
+			_validationActor = validationActor;
 		}
 
 		protected override void OnReceive(object message)
@@ -50,38 +56,22 @@ namespace WinTail.Actors
 
 		private void OnTerminateMessageReceived()
 		{
-			_consoleWriterActor.TellWriteToConsole("Terminating...");
+			_validationActor.TellWriteToConsole("Terminating...");
 			Context.System.Terminate();
 		}
 
 		private void OnContinueMessageReceived()
 		{
 			var userInput = Console.ReadLine();
-			if (String.Equals(userInput, ExitCommand, StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(userInput, ExitCommand, StringComparison.OrdinalIgnoreCase))
 			{
 				Self.TellTerminate();
 				return;
 			}
-			else if (String.IsNullOrEmpty(userInput))
-			{
-				_consoleWriterActor.TellNullInputError("Input is null.");
-			}
-			else if (IsValid(userInput))
-			{
-				_consoleWriterActor.TellInputSucess("Input is valid.");
-			}
 			else
 			{
-				_consoleWriterActor.TellValidationError("Input is invalid.");
+				_validationActor.TellValidate(userInput);
 			}
-
-			Self.TellContinue();
-		}
-
-		private static bool IsValid(string message)
-		{
-			var valid = message.Length % 2 == 0;
-			return valid;
 		}
 	}
 }

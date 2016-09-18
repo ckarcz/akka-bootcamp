@@ -66,6 +66,8 @@
     <Compile Include="Messages\TerminateMessage.cs" />
     <Compile Include="Extensions\AkkaTellExtensions.cs" />
     <Compile Include="Messages\WriteToConsoleMessage.cs" />
+    <Compile Include="Actors\ValidationActor.cs" />
+    <Compile Include="Messages\ValidateMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
