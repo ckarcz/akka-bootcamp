@@ -35,8 +35,6 @@ namespace WinTail.Actors
 			{
 				OnContinueMessageReceived();
 			}
-
-			Self.TellContinue();
 		}
 
 		private void OnStartMessageReceived()
@@ -46,10 +44,13 @@ namespace WinTail.Actors
 			stringBuilder.AppendLine("Some entries will pass validation, and some won't...\n\n");
 			stringBuilder.AppendLine("Type 'exit' to quit this application at any time.\n");
 			_consoleWriterActor.TellWriteToConsole(stringBuilder.ToString());
+
+			Self.TellContinue();
 		}
 
 		private void OnTerminateMessageReceived()
 		{
+			_consoleWriterActor.TellWriteToConsole("Terminating...");
 			Context.System.Terminate();
 		}
 
@@ -59,6 +60,7 @@ namespace WinTail.Actors
 			if (String.Equals(userInput, ExitCommand, StringComparison.OrdinalIgnoreCase))
 			{
 				Self.TellTerminate();
+				return;
 			}
 			else if (String.IsNullOrEmpty(userInput))
 			{
@@ -72,6 +74,8 @@ namespace WinTail.Actors
 			{
 				_consoleWriterActor.TellValidationError("Input is invalid.");
 			}
+
+			Self.TellContinue();
 		}
 
 		private static bool IsValid(string message)
