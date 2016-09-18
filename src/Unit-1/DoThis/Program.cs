@@ -3,29 +3,28 @@ using Akka.Actor;
 
 namespace WinTail
 {
-	#region Program
 	class Program
 	{
 		public static ActorSystem MyActorSystem;
 
 		static void Main(string[] args)
 		{
-			// initialize MyActorSystem
-			// YOU NEED TO FILL IN HERE
+			// create actor system
+			MyActorSystem = ActorSystem.Create ("MyActorSystem");
+
+			// create actors
+			var consoleWriterActorProps = Props.Create (() => new ConsoleWriterActor ());
+			var consoleWriterActor = MyActorSystem.ActorOf (consoleWriterActorProps);
+			var consoleReaderActorProps = Props.Create (() => new ConsoleReaderActor (consoleWriterActor));
+			var consoleReaderActor = MyActorSystem.ActorOf (consoleReaderActorProps);
 
 			PrintInstructions ();
 
-			// time to make your first actors!
-			//YOU NEED TO FILL IN HERE
-			// make consoleWriterActor using these props: Props.Create(() => new ConsoleWriterActor())
-			// make consoleReaderActor using these props: Props.Create(() => new ConsoleReaderActor(consoleWriterActor))
-
-
 			// tell console reader to begin
-			//YOU NEED TO FILL IN HERE
+			consoleReaderActor.Tell ("start");
 
 			// blocks the main thread from exiting until the actor system is shut down
-			//MyActorSystem.WhenTerminated.Wait();
+			MyActorSystem.WhenTerminated.Wait ();
 		}
 
 		private static void PrintInstructions()
@@ -44,5 +43,4 @@ namespace WinTail
 			Console.WriteLine ("Type 'exit' to quit this application at any time.\n");
 		}
 	}
-	#endregion
 }
