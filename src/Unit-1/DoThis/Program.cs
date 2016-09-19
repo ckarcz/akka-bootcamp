@@ -15,12 +15,18 @@ namespace WinTail
 			MyActorSystem = ActorSystem.Create("MyActorSystem");
 
 			// create actors
-			var consoleWriterActor = MyActorSystem.ActorOf(Props.Create(() => new ConsoleWriterActor()), "ConsoleWriterActor");
-			var validationAction = MyActorSystem.ActorOf(Props.Create(() => new ValidationActor(consoleWriterActor)), "ValidationActor");
-			var consoleReaderActor = MyActorSystem.ActorOf(Props.Create(() => new ConsoleReaderActor(consoleWriterActor, validationAction)), "ConsoleReaderActor");
+			var consoleWriterActorProps = Props.Create<ConsoleWriterActor>();
+			var consoleWriterActor = MyActorSystem.ActorOf(consoleWriterActorProps, "ConsoleWriterActor");
+			var validationActorProps = Props.Create<ValidationActor>(consoleWriterActor);
+			var validationActor = MyActorSystem.ActorOf(validationActorProps, "ValidationActor");
+			//var consoleReaderActorProps = Props.Create<ConsoleReaderActor>(consoleWriterActor, validationActor);
+			//var consoleReaderActor = MyActorSystem.ActorOf(consoleReaderActorProps, "ConsoleReaderActor");
+			var fileTailCoordinatorActorProps = Props.Create(() => new FileTailCoordinatorActor());
+			var fileTailCoordinatorActor = MyActorSystem.ActorOf(fileTailCoordinatorActorProps, "FileTailCoordinatorActor");
 
-			// tell console reader to begin
-			consoleReaderActor.TellStart();
+			// start certain actors
+			//consoleReaderActor.TellStart();
+			fileTailCoordinatorActor.Tell(new FileTailCoordinatorActor.Message.StartTail("sample_log_file.txt", consoleWriterActor));
 
 			// blocks the main thread from exiting until the actor system is shut down
 			MyActorSystem.WhenTerminated.Wait();

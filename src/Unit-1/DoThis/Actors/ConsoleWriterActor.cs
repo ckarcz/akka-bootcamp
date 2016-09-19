@@ -8,41 +8,39 @@ namespace WinTail.Actors
 	{
 		protected override void OnReceive(object message)
 		{
-			if (message is InputSuccessMessage)
+			if (message is ValidationActor.Message.ValidationResultMessage)
 			{
-				OnInputSuccessMessageReceieved(message as InputSuccessMessage);
-			}
-			else if (message is InputErrorMessage)
-			{
-				OnInputErrorMessageReceived(message as InputErrorMessage);
-			}
-			else if (message is WriteToConsoleMessage)
-			{
-				OnWriteToConsoleMessageReceived(message as WriteToConsoleMessage);
+				OnValidationResultMessageRecieved(message as ValidationActor.Message.ValidationResultMessage);
 			}
 			else if (message is TerminateMessage)
 			{
 				OnTerminateMessageReceived();
 			}
+			else
+			{
+				WriteToConsole(message);
+			}
 		}
 
-		private void OnInputSuccessMessageReceieved(InputSuccessMessage message)
+		private void OnValidationResultMessageRecieved(ValidationActor.Message.ValidationResultMessage message)
 		{
-			Console.ForegroundColor = ConsoleColor.Green;
-			Console.WriteLine(message.Reason);
-			Console.ResetColor();
+			if (message.Valid)
+			{
+				Console.ForegroundColor = ConsoleColor.Green;
+				Console.WriteLine(message.Reason);
+				Console.ResetColor();
+			}
+			else
+			{
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine(message.Reason);
+				Console.ResetColor();
+			}
 		}
 
-		private void OnInputErrorMessageReceived(InputErrorMessage message)
+		private void WriteToConsole(object message)
 		{
-			Console.ForegroundColor = ConsoleColor.Red;
-			Console.WriteLine(message.Reason);
-			Console.ResetColor();
-		}
-
-		private void OnWriteToConsoleMessageReceived(WriteToConsoleMessage message)
-		{
-			Console.WriteLine(message.Message);
+			Console.WriteLine(message);
 		}
 
 		private void OnTerminateMessageReceived()

@@ -49,14 +49,14 @@ namespace WinTail.Actors
 			stringBuilder.AppendLine("Write whatever you want into the console!");
 			stringBuilder.AppendLine("Some entries will pass validation, and some won't...\n\n");
 			stringBuilder.AppendLine("Type 'exit' to quit this application at any time.\n");
-			_consoleWriterActor.TellWriteToConsole(stringBuilder.ToString());
+			_consoleWriterActor.Tell(stringBuilder.ToString());
 
 			Self.TellContinue();
 		}
 
 		private void OnTerminateMessageReceived()
 		{
-			_validationActor.TellWriteToConsole("Terminating...");
+			_consoleWriterActor.Tell("Terminating...");
 			Context.System.Terminate();
 		}
 
@@ -70,7 +70,7 @@ namespace WinTail.Actors
 			}
 			else
 			{
-				_validationActor.TellValidate(userInput);
+				_validationActor.Tell(new ValidationActor.Message.ValidateMessage(userInput));
 			}
 		}
 	}

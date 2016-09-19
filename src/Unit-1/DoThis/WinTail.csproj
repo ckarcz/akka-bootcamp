@@ -58,16 +58,12 @@
     <Compile Include="Actors\ConsoleReaderActor.cs" />
     <Compile Include="Actors\ConsoleWriterActor.cs" />
     <Compile Include="Messages\ContinueMessage.cs" />
-    <Compile Include="Messages\InputErrorMessage.cs" />
-    <Compile Include="Messages\InputSuccessMessage.cs" />
-    <Compile Include="Messages\NullInputErrorMessage.cs" />
-    <Compile Include="Messages\ValidationErrorMessage.cs" />
     <Compile Include="Messages\StartMessage.cs" />
     <Compile Include="Messages\TerminateMessage.cs" />
     <Compile Include="Extensions\AkkaTellExtensions.cs" />
-    <Compile Include="Messages\WriteToConsoleMessage.cs" />
     <Compile Include="Actors\ValidationActor.cs" />
-    <Compile Include="Messages\ValidateMessage.cs" />
+    <Compile Include="Actors\FileTailCoordinatorActor.cs" />
+    <Compile Include="Actors\FileTailActor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -77,6 +73,11 @@
     <Folder Include="Messages\" />
     <Folder Include="Actors\" />
     <Folder Include="Extensions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="sample_log_file.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
