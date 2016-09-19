@@ -9,9 +9,9 @@ namespace WinTail.Actors
 	public class FileTailActor : UntypedActor
 	{
 		private readonly IActorRef _reporterActor;
-		private readonly FileObserver _observer;
-		private readonly Stream _fileStream;
-		private readonly StreamReader _fileStreamReader;
+		private FileObserver _observer;
+		private Stream _fileStream;
+		private StreamReader _fileStreamReader;
 
 		private static class Message
 		{
@@ -55,7 +55,12 @@ namespace WinTail.Actors
 		{
 			_reporterActor = reporterActor;
 			FilePath = filePath;
+		}
 
+		public string FilePath { get; private set; }
+
+		protected override void PreStart()
+		{
 			_observer = new FileObserver(Self, Path.GetFullPath(FilePath));
 			_observer.Start();
 
@@ -64,9 +69,9 @@ namespace WinTail.Actors
 
 			var text = _fileStreamReader.ReadToEnd();
 			Self.Tell(new Message.InitialRead(FilePath, text));
-		}
 
-		public string FilePath { get; private set; }
+			base.PreStart();
+		}
 
 		protected override void OnReceive(object message)
 		{

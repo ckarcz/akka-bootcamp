@@ -19,14 +19,14 @@ namespace WinTail
 			var consoleWriterActor = MyActorSystem.ActorOf(consoleWriterActorProps, "ConsoleWriterActor");
 			var validationActorProps = Props.Create<ValidationActor>(consoleWriterActor);
 			var validationActor = MyActorSystem.ActorOf(validationActorProps, "ValidationActor");
-			//var consoleReaderActorProps = Props.Create<ConsoleReaderActor>(consoleWriterActor, validationActor);
-			//var consoleReaderActor = MyActorSystem.ActorOf(consoleReaderActorProps, "ConsoleReaderActor");
+			var consoleReaderActorProps = Props.Create<ConsoleReaderActor>(consoleWriterActor, validationActor);
+			var consoleReaderActor = MyActorSystem.ActorOf(consoleReaderActorProps, "ConsoleReaderActor");
 			var fileTailCoordinatorActorProps = Props.Create(() => new FileTailCoordinatorActor());
 			var fileTailCoordinatorActor = MyActorSystem.ActorOf(fileTailCoordinatorActorProps, "FileTailCoordinatorActor");
 
 			// start certain actors
-			//consoleReaderActor.TellStart();
 			fileTailCoordinatorActor.Tell(new FileTailCoordinatorActor.Message.StartTail("sample_log_file.txt", consoleWriterActor));
+			consoleReaderActor.TellStart();
 
 			// blocks the main thread from exiting until the actor system is shut down
 			MyActorSystem.WhenTerminated.Wait();
