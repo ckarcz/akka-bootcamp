@@ -73,6 +73,22 @@ namespace WinTail.Actors
 			base.PreStart();
 		}
 
+		protected override void PostStop()
+		{
+			_observer.Dispose();
+			_observer = null;
+
+			_fileStreamReader.Close();
+			_fileStreamReader.Dispose();
+			_fileStreamReader = null;
+
+			_fileStream.Close();
+			_fileStream.Dispose();
+			_fileStream = null;
+
+			base.PostStop();
+		}
+
 		protected override void OnReceive(object message)
 		{
 			if (message is Message.FileWrite)
